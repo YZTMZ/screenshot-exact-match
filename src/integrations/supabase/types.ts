@@ -14,7 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      challenges: {
+        Row: {
+          created_date: string
+          id: string
+          status: string
+          target_value: number
+          title: string
+          type: string
+          unit: string
+          user_id: string
+          workout_id_base: string | null
+        }
+        Insert: {
+          created_date?: string
+          id?: string
+          status?: string
+          target_value: number
+          title: string
+          type: string
+          unit: string
+          user_id?: string
+          workout_id_base?: string | null
+        }
+        Update: {
+          created_date?: string
+          id?: string
+          status?: string
+          target_value?: number
+          title?: string
+          type?: string
+          unit?: string
+          user_id?: string
+          workout_id_base?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_workout_id_base_fkey"
+            columns: ["workout_id_base"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weight_entries: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          photo_url: string | null
+          source: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          photo_url?: string | null
+          source?: string
+          user_id?: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          photo_url?: string | null
+          source?: string
+          user_id?: string
+          weight_kg?: number
+        }
+        Relationships: []
+      }
+      weight_goals: {
+        Row: {
+          created_date: string
+          deadline: string | null
+          start_weight_kg: number
+          target_weight_kg: number
+          user_id: string
+        }
+        Insert: {
+          created_date?: string
+          deadline?: string | null
+          start_weight_kg: number
+          target_weight_kg: number
+          user_id?: string
+        }
+        Update: {
+          created_date?: string
+          deadline?: string | null
+          start_weight_kg?: number
+          target_weight_kg?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workouts: {
+        Row: {
+          avg_heart_rate: number | null
+          avg_rpm: number | null
+          avg_speed_kmh: number | null
+          avg_watts: number | null
+          calories: number
+          created_at: string
+          date: string
+          distance_km: number | null
+          duration_min: number
+          id: string
+          notes: string | null
+          photo_url: string | null
+          resistance: number | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          avg_heart_rate?: number | null
+          avg_rpm?: number | null
+          avg_speed_kmh?: number | null
+          avg_watts?: number | null
+          calories: number
+          created_at?: string
+          date?: string
+          distance_km?: number | null
+          duration_min: number
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          resistance?: number | null
+          source?: string
+          user_id?: string
+        }
+        Update: {
+          avg_heart_rate?: number | null
+          avg_rpm?: number | null
+          avg_speed_kmh?: number | null
+          avg_watts?: number | null
+          calories?: number
+          created_at?: string
+          date?: string
+          distance_km?: number | null
+          duration_min?: number
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          resistance?: number | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
