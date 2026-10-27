@@ -33,6 +33,7 @@
   --color-ring: var(--ring);
   --color-kcal: var(--kcal);
   --color-kcal-soft: var(--kcal-soft);
+  --color-kcal-foreground: var(--kcal-foreground);
   --color-time: var(--time);
   --color-time-soft: var(--time-soft);
   --color-success: var(--success);
@@ -70,6 +71,7 @@
   /* #d6336c calorias, #0e7c86 tempo, #2f9e44 progresso */
   --kcal: oklch(0.58 0.19 0);
   --kcal-soft: oklch(0.58 0.19 0 / 12%);
+  --kcal-foreground: oklch(0.99 0 0);
   --time: oklch(0.52 0.09 205);
   --time-soft: oklch(0.52 0.09 205 / 12%);
   --success: oklch(0.6 0.15 145);
@@ -100,6 +102,7 @@
   --ring: oklch(0.7 0.16 0);
   --kcal: oklch(0.7 0.17 0);
   --kcal-soft: oklch(0.7 0.17 0 / 16%);
+  --kcal-foreground: oklch(0.99 0 0);
   --time: oklch(0.68 0.1 200);
   --time-soft: oklch(0.68 0.1 200 / 16%);
   --success: oklch(0.72 0.15 145);
