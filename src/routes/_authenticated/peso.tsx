@@ -51,10 +51,10 @@ function Peso() {
   const saveGoal = async (e: React.FormEvent) => {
     e.preventDefault();
     const s = num(g.start), t = num(g.target);
-    if (!weightValid(s) || !weightValid(t)) return toast.error("Os pesos precisam estar entre 20 e 400 kg.");
+    if (!weightValid(s) || !weightValid(t)) { toast.error("Os pesos precisam estar entre 20 e 400 kg."); return; }
     const { data: u } = await supabase.auth.getUser();
     const { error } = await supabase.from("weight_goals").upsert({ user_id: u.user!.id, start_weight_kg: s, target_weight_kg: t, deadline: g.deadline || null });
-    if (error) return toast.error("Não foi possível salvar a meta. Tente de novo.");
+    if (error) { toast.error("Não foi possível salvar a meta. Tente de novo."); return; }
     toast.success("Meta salva."); qc.invalidateQueries();
   };
 
@@ -75,7 +75,7 @@ function Peso() {
   const saveEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     const kg = num(entry.kg);
-    if (!weightValid(kg)) return toast.error("O peso precisa estar entre 20 e 400 kg.");
+    if (!weightValid(kg)) { toast.error("O peso precisa estar entre 20 e 400 kg."); return; }
     try {
       const photo_url = scale ? await uploadPhoto(scale.blob, "scale") : null;
       const { error } = await supabase.from("weight_entries").insert({ date: entry.date, weight_kg: kg, photo_url, source: scale ? "photo" : "manual" });

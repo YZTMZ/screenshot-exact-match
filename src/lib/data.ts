@@ -168,7 +168,7 @@ export function fmtMin(m: number) {
   return ss ? `${mm}min${String(ss).padStart(2, "0")}` : `${mm} min`;
 }
 export function fmtDate(d: string) {
-  const [y, m, day] = d.split("-");
+  const [y = "", m = "", day = ""] = d.split("-");
   return `${day}/${m}/${y.slice(2)}`;
 }
 export function todayISO() {

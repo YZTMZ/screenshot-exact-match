@@ -4,7 +4,7 @@ export type ChallengeType = "pace" | "duration" | "total_kcal" | "frequency";
 export type ChallengeStatus = "open" | "done" | "missed";
 
 export interface WorkoutLike {
-  id?: string;
+  id?: string | undefined;
   date: string; // YYYY-MM-DD
   duration_min: number;
   calories: number;
@@ -37,7 +37,7 @@ export function round(n: number, d = 1) {
 }
 
 function parseDate(d: string): Date {
-  const [y, m, day] = d.slice(0, 10).split("-").map(Number);
+  const [y = 1970, m = 1, day = 1] = d.slice(0, 10).split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, day));
 }
 
@@ -58,10 +58,11 @@ export function parseDuration(v: string | number): number | null {
     const n = Number(s);
     return Number.isFinite(n) ? n : null;
   }
-  const parts = s.split(":").map(Number);
+  const parts = s.split(":").map(Number) as number[];
+  const [a = 0, b = 0, c = 0] = parts;
   if (parts.some((p) => !Number.isFinite(p))) return null;
-  if (parts.length === 2) return round(parts[0] + parts[1] / 60, 2);
-  if (parts.length === 3) return round(parts[0] * 60 + parts[1] + parts[2] / 60, 2);
+  if (parts.length === 2) return round(a + b / 60, 2);
+  if (parts.length === 3) return round(a * 60 + b + c / 60, 2);
   return null;
 }
 
@@ -93,7 +94,7 @@ export const INITIAL_CHALLENGES = [
  * Returns null when the challenge should remain open (frequency still in progress).
  */
 export function evaluateChallenge(
-  c: Pick<ChallengeLike, "type" | "target_value" | "created_date">,
+  c: { type: string; target_value: number; created_date: string },
   w: WorkoutLike,
   workoutsInWeekOfNew: number,
 ): ChallengeStatus | null {
