@@ -86,7 +86,7 @@ export function WorkoutFlowProvider({ children }: { children: ReactNode }) {
       for (const { key } of FIELDS) f[key] = s(d[key]);
       setForm(f);
       const fl = new Set<string>(d.unreadable_fields ?? []);
-      FIELDS.forEach(({ key, required }) => { if (required && d[key] == null) fl.add(key); });
+      (["duration_min", "calories"] as const).forEach((key) => { if (d[key] == null) fl.add(key); });
       setFlagged(fl);
       setLowConfidence(d.confidence !== "alta");
       setPhase("form");

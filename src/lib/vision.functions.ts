@@ -25,9 +25,9 @@ export type ReadResult =
   | { ok: true; kind: "scale"; data: ScaleReading }
   | { ok: false; error: string; retryable: boolean };
 
-const num = { type: ["number", "null"] };
+const num: any = { type: ["number", "null"] };
 
-const WORKOUT_SCHEMA = {
+const WORKOUT_SCHEMA: any = {
   type: "object",
   additionalProperties: false,
   required: [
@@ -43,7 +43,7 @@ const WORKOUT_SCHEMA = {
   },
 };
 
-const SCALE_SCHEMA = {
+const SCALE_SCHEMA: any = {
   type: "object",
   additionalProperties: false,
   required: ["weight_kg", "confidence"],

@@ -33,7 +33,8 @@ function Treinos() {
 
   const rows = list.map((w, i) => {
     const k = kcalPerMin(w);
-    const prev = i > 0 ? kcalPerMin(list[i - 1]) : null;
+    const pw = list[i - 1];
+    const prev = pw ? kcalPerMin(pw) : null;
     return { w, k, diff: prev ? ((k - prev) / prev) * 100 : null };
   }).reverse();
 
