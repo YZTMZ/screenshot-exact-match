@@ -40,7 +40,7 @@ function Index() {
           <li key={i.t} className="flex items-center gap-3 rounded-xl border bg-card p-3"><i.icon className={`h-5 w-5 ${i.c}`} />{i.t}</li>
         ))}
       </ul>
-      <Button asChild variant="kcal" size="lg"><Link to="/auth">Começar</Link></Button>
+      <Button asChild variant="kcal" size="lg"><Link to="/painel">Começar</Link></Button>
     </div>
   );
 }
