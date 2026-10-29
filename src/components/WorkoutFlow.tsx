@@ -24,8 +24,11 @@ interface Ctx {
   startManual: () => void;
   startEdit: (w: Workout) => void;
 }
-const FlowCtx = createContext<Ctx | null>(null);
-export const useWorkoutFlow = () => useContext(FlowCtx)!;
+// Keep a single context instance across hot reloads so provider and consumers always match.
+const g = globalThis as unknown as { __spinFlowCtx?: React.Context<Ctx | null> };
+const FlowCtx = (g.__spinFlowCtx ??= createContext<Ctx | null>(null));
+const noop: Ctx = { startPhoto: () => {}, startManual: () => {}, startEdit: () => {} };
+export const useWorkoutFlow = () => useContext(FlowCtx) ?? noop;
 
 const FIELDS = [
   { key: "duration_min", label: "Duração (min ou mm:ss)", required: true, mode: "text" },
