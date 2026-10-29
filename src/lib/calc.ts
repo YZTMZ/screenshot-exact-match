@@ -158,3 +158,43 @@ export function kgPerWeekNeeded(currentKg: number, targetKg: number, deadline: s
   if (days <= 0) return Infinity;
   return toLose / (days / 7);
 }
+
+export interface MergeableWorkout {
+  duration_min: number;
+  calories: number;
+  distance_km?: number | null;
+  avg_speed_kmh?: number | null;
+  avg_rpm?: number | null;
+  avg_watts?: number | null;
+  avg_heart_rate?: number | null;
+  resistance?: number | null;
+  notes?: string | null;
+  photo_url?: string | null;
+}
+
+/** Combines workouts done on the same day: sums time/kcal/km, time-weighted averages for the rest. */
+export function mergeSameDay(list: MergeableWorkout[]) {
+  const dur = list.reduce((s, w) => s + Number(w.duration_min), 0);
+  const sum = (k: "calories" | "distance_km") => {
+    const v = list.filter((w) => w[k] != null);
+    return v.length ? round(v.reduce((s, w) => s + Number(w[k]), 0), 2) : null;
+  };
+  const avg = (k: "avg_speed_kmh" | "avg_rpm" | "avg_watts" | "avg_heart_rate" | "resistance") => {
+    const v = list.filter((w) => w[k] != null);
+    const t = v.reduce((s, w) => s + Number(w.duration_min), 0);
+    return v.length && t ? round(v.reduce((s, w) => s + Number(w[k]) * Number(w.duration_min), 0) / t, 1) : null;
+  };
+  const notes = list.map((w) => w.notes?.trim()).filter(Boolean).join(" | ") || null;
+  return {
+    duration_min: round(dur, 2),
+    calories: sum("calories") ?? 0,
+    distance_km: sum("distance_km"),
+    avg_speed_kmh: avg("avg_speed_kmh"),
+    avg_rpm: avg("avg_rpm"),
+    avg_watts: avg("avg_watts"),
+    avg_heart_rate: avg("avg_heart_rate"),
+    resistance: avg("resistance"),
+    notes,
+    photo_url: list.find((w) => w.photo_url)?.photo_url ?? null,
+  };
+}

@@ -74,3 +74,16 @@ describe("regras do Spin Log", () => {
     expect(workoutsRemaining(80, 78, 385)).toBe(40);
   });
 });
+
+import { mergeSameDay } from "./calc";
+describe("mergeSameDay", () => {
+  it("soma tempo e calorias de dois treinos no mesmo dia", () => {
+    const m = mergeSameDay([{ duration_min: 30, calories: 300 }, { duration_min: 20, calories: 250 }]);
+    expect(m.duration_min).toBe(50);
+    expect(m.calories).toBe(550);
+  });
+  it("faz média de FC ponderada pelo tempo", () => {
+    const m = mergeSameDay([{ duration_min: 30, calories: 1, avg_heart_rate: 140 }, { duration_min: 10, calories: 1, avg_heart_rate: 100 }]);
+    expect(m.avg_heart_rate).toBe(130);
+  });
+});
