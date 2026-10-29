@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { evaluateChallenge, generateChallenges, kcalPerMin, weekStart } from "./calc";
+import { evaluateChallenge, generateChallenges, kcalPerMin, mergeSameDay, weekStart } from "./calc";
 
 export type Workout = Tables<"workouts">;
 export type WeightEntry = Tables<"weight_entries">;
@@ -23,15 +23,34 @@ function unwrap<T>(r: { data: T | null; error: { message: string } | null }): T 
 export function useWorkouts() {
   return useQuery({
     queryKey: qk.workouts,
-    queryFn: async () =>
-      unwrap(
+    queryFn: async () => {
+      const list = unwrap(
         await supabase
           .from("workouts")
           .select("*")
           .order("date", { ascending: true })
           .order("created_at", { ascending: true }),
-      ) as Workout[],
+      ) as Workout[];
+      return consolidateDays(list);
+    },
   });
+}
+
+/** Merges any workouts sharing the same date into the first one of that day. */
+async function consolidateDays(list: Workout[]): Promise<Workout[]> {
+  const byDate = new Map<string, Workout[]>();
+  list.forEach((w) => byDate.set(w.date, [...(byDate.get(w.date) ?? []), w]));
+  const out: Workout[] = [];
+  for (const group of byDate.values()) {
+    const [first, ...rest] = group;
+    if (!first) continue;
+    if (!rest.length) { out.push(first); continue; }
+    const merged = mergeSameDay(group);
+    const upd = unwrap(await supabase.from("workouts").update(merged).eq("id", first.id).select().single()) as Workout;
+    await supabase.from("workouts").delete().in("id", rest.map((w) => w.id));
+    out.push(upd);
+  }
+  return out;
 }
 
 export function useWeights() {
@@ -107,7 +126,13 @@ export interface SaveResult {
 }
 
 export async function saveWorkout(input: WorkoutInput, existing: Workout[]): Promise<SaveResult> {
-  const workout = unwrap(await supabase.from("workouts").insert(input).select().single()) as Workout;
+  const sameDay = existing.find((w) => w.date === input.date);
+  const workout = sameDay
+    ? (unwrap(
+        await supabase.from("workouts").update(mergeSameDay([sameDay, input as any])).eq("id", sameDay.id).select().single(),
+      ) as Workout)
+    : (unwrap(await supabase.from("workouts").insert(input).select().single()) as Workout);
+  existing = existing.filter((w) => w.id !== workout.id);
 
   const sorted = [...existing].sort((a, b) => (a.date + a.created_at).localeCompare(b.date + b.created_at));
   const previous = sorted.filter((w) => w.date <= workout.date).at(-1) ?? null;
