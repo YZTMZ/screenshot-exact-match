@@ -10,8 +10,11 @@ export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
+    if (data.user) return { user: data.user };
+    // Sem login: cria automaticamente um acesso de visitante neste aparelho.
+    const anon = await supabase.auth.signInAnonymously();
+    if (anon.error || !anon.data.user) throw redirect({ to: "/auth" });
+    return { user: anon.data.user };
   },
   component: AppShell,
 });
@@ -52,7 +55,6 @@ function AppShell() {
             </nav>
             <div className="ml-auto flex items-center gap-1">
               <ThemeToggle />
-              <Button variant="ghost" size="icon" aria-label="Sair" onClick={signOut}><LogOut /></Button>
             </div>
           </div>
         </header>

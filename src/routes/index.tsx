@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => { if (data.session) navigate({ to: "/painel", replace: true }); });
+    navigate({ to: "/painel", replace: true });
   }, [navigate]);
 
   return (
