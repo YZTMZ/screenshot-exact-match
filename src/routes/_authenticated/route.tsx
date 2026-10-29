@@ -1,17 +1,18 @@
-import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { Bike, LayoutDashboard, LogOut, Scale } from "lucide-react";
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
+import { Bike, LayoutDashboard, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WorkoutFlowProvider } from "@/components/WorkoutFlow";
 import { ThemeToggle } from "@/components/theme";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
+    if (data.user) return { user: data.user };
+    // Sem login: cria automaticamente um acesso de visitante neste aparelho.
+    const anon = await supabase.auth.signInAnonymously();
+    if (anon.error || !anon.data.user) throw redirect({ to: "/auth" });
+    return { user: anon.data.user };
   },
   component: AppShell,
 });
@@ -23,15 +24,6 @@ const TABS = [
 ] as const;
 
 function AppShell() {
-  const qc = useQueryClient();
-  const navigate = useNavigate();
-  const signOut = async () => {
-    await qc.cancelQueries();
-    qc.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  };
-
   return (
     <WorkoutFlowProvider>
       <div className="min-h-screen pb-24 md:pb-10">
@@ -52,7 +44,6 @@ function AppShell() {
             </nav>
             <div className="ml-auto flex items-center gap-1">
               <ThemeToggle />
-              <Button variant="ghost" size="icon" aria-label="Sair" onClick={signOut}><LogOut /></Button>
             </div>
           </div>
         </header>

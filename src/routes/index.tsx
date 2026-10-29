@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Bike, Camera, LineChart, Target } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -21,7 +20,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => { if (data.session) navigate({ to: "/painel", replace: true }); });
+    navigate({ to: "/painel", replace: true });
   }, [navigate]);
 
   return (
@@ -41,7 +40,7 @@ function Index() {
           <li key={i.t} className="flex items-center gap-3 rounded-xl border bg-card p-3"><i.icon className={`h-5 w-5 ${i.c}`} />{i.t}</li>
         ))}
       </ul>
-      <Button asChild variant="kcal" size="lg"><Link to="/auth">Começar</Link></Button>
+      <Button asChild variant="kcal" size="lg"><Link to="/painel">Começar</Link></Button>
     </div>
   );
 }

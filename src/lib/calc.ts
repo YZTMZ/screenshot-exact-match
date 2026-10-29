@@ -114,6 +114,7 @@ export function evaluateChallenge(
       return null;
     }
   }
+  return null;
 }
 
 export interface ValueWarning {
